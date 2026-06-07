@@ -56,20 +56,25 @@ export function AdminIndexPage() {
         <>
           <div className="grid grid-cols-2 gap-3">
             {cards.map((c) => (
-              <Card key={c.label} className="flex flex-col gap-3 p-4">
+              <div
+                key={c.label}
+                className={cn(
+                  "relative flex flex-col gap-3 overflow-hidden rounded-card bg-gradient-to-br p-4 text-white shadow-card",
+                  c.tint,
+                )}
+              >
                 <span
-                  className={cn(
-                    "flex size-10 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-soft",
-                    c.tint,
-                  )}
-                >
+                  aria-hidden
+                  className="pointer-events-none absolute -right-5 -top-5 size-16 rounded-full bg-white/10"
+                />
+                <span className="flex size-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
                   <c.icon className="size-5" />
                 </span>
                 <div>
-                  <span className="text-2xl font-bold text-ink">{c.value}</span>
-                  <p className="text-xs text-ink-muted">{c.label}</p>
+                  <span className="text-2xl font-bold">{c.value}</span>
+                  <p className="text-xs text-white/80">{c.label}</p>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
 
@@ -101,15 +106,15 @@ export function AdminIndexPage() {
           <Link to="/admin/reports">
             <Card
               interactive
-              className="flex items-center justify-between p-4"
+              className="flex items-center justify-between bg-gradient-to-r from-danger/12 to-danger/5 p-4"
             >
               <div className="flex items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-xl bg-danger/12 text-danger">
+                <span className="flex size-11 items-center justify-center rounded-xl bg-danger/15 text-danger">
                   <Flag className="size-6" />
                 </span>
                 <div>
                   <p className="font-bold text-ink">Laporan Masalah</p>
-                  <p className="text-xs text-ink-soft">Tinjau & selesaikan</p>
+                  <p className="text-xs text-ink-soft">Tinjau &amp; selesaikan</p>
                 </div>
               </div>
               <ChevronRight className="size-5 text-ink-muted" />

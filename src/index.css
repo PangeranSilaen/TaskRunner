@@ -63,7 +63,10 @@ body {
 
 /* Respect mobile safe areas (notch / home indicator) */
 .safe-top {
-  padding-top: env(safe-area-inset-top);
+  /* `.safe-top` (unlayered) overrides Tailwind's `pt-*` utilities, so it must
+     carry the full top padding itself: always add a comfortable base on top of
+     the device safe-area inset (which is 0 on phones without a notch). */
+  padding-top: calc(env(safe-area-inset-top) + 1.5rem);
 }
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);

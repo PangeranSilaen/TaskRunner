@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
+      includeAssets: ["favicon.svg", "apple-touch-icon.png"],
       manifest: {
         name: "Task Runner",
         short_name: "Task Runner",
@@ -33,7 +33,7 @@ export default defineConfig({
             type: "image/png",
           },
           {
-            src: "pwa-512x512.png",
+            src: "maskable-512x512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",

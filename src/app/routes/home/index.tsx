@@ -7,7 +7,6 @@ import {
 } from "@/stores/auth-store";
 import { VerificationBanner } from "@/components/layout/verification-banner";
 import { NotificationBell } from "@/components/layout/notification-bell";
-import { LogoMark } from "@/components/ui/logo";
 import { Avatar } from "@/components/ui/avatar";
 import { useMyTasks } from "@/features/tasks/hooks";
 import { useAvailableRunners } from "@/features/runner/hooks";
@@ -31,29 +30,20 @@ export function HomePage() {
     <div className="pb-4">
       {/* Teal gradient header */}
       <header className="safe-top rounded-b-[2rem] bg-gradient-to-br from-primary to-primary-dark px-5 pb-7 pt-5 text-white shadow-card">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-white p-1.5 shadow-soft">
-              <LogoMark className="size-full" />
-            </span>
-            <span className="text-sm font-bold tracking-tight">
-              Task<span className="text-accent">Runner</span>
-            </span>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <Avatar
+              name={profile?.full_name}
+              src={profile?.avatar_url}
+              size="lg"
+              className="ring-2 ring-white/30"
+            />
+            <div className="min-w-0">
+              <p className="text-sm text-white/80">Halo,</p>
+              <h1 className="truncate text-xl font-bold">{firstName} 👋</h1>
+            </div>
           </div>
           <NotificationBell />
-        </div>
-
-        <div className="mt-5 flex items-center gap-3">
-          <Avatar
-            name={profile?.full_name}
-            src={profile?.avatar_url}
-            size="lg"
-            className="ring-2 ring-white/30"
-          />
-          <div className="min-w-0">
-            <p className="text-sm text-white/80">Halo,</p>
-            <h1 className="truncate text-xl font-bold">{firstName} 👋</h1>
-          </div>
         </div>
       </header>
 
@@ -192,24 +182,25 @@ function ActionCard({
   const content = (
     <div
       className={cn(
-        "flex flex-col gap-3 rounded-card bg-surface p-4 shadow-card transition-transform duration-150",
+        "relative flex flex-col gap-4 overflow-hidden rounded-card p-4 text-white shadow-card transition-transform duration-150",
+        accent === "primary"
+          ? "bg-gradient-to-br from-primary to-primary-dark"
+          : "bg-gradient-to-br from-accent to-primary",
         !disabled && "active:scale-[0.97]",
         disabled && "pointer-events-none opacity-50",
       )}
     >
+      {/* Decorative glow */}
       <span
-        className={cn(
-          "flex size-12 items-center justify-center rounded-2xl text-white shadow-soft",
-          accent === "primary"
-            ? "bg-gradient-to-br from-primary to-primary-dark"
-            : "bg-gradient-to-br from-accent to-primary",
-        )}
-      >
+        aria-hidden
+        className="pointer-events-none absolute -right-6 -top-6 size-20 rounded-full bg-white/10"
+      />
+      <span className="flex size-11 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
         {icon}
       </span>
       <div>
-        <p className="font-bold text-ink">{title}</p>
-        <p className="text-xs text-ink-soft">{subtitle}</p>
+        <p className="font-bold leading-tight">{title}</p>
+        <p className="text-xs text-white/80">{subtitle}</p>
       </div>
     </div>
   );

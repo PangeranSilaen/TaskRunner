@@ -19,17 +19,10 @@ type Chip = (typeof chips)[number]["key"];
 function Header() {
   return (
     <header className="safe-top rounded-b-[2rem] bg-gradient-to-br from-primary to-primary-dark px-5 pb-6 pt-6 text-white shadow-card">
-      <div className="flex items-center gap-3">
-        <span className="flex size-11 items-center justify-center rounded-2xl bg-white/15">
-          <Bike className="size-6" />
-        </span>
-        <div>
-          <h1 className="text-xl font-bold">Runner Dashboard</h1>
-          <p className="text-sm text-white/80">
-            Pilih task yang ingin kamu kerjakan
-          </p>
-        </div>
-      </div>
+      <h1 className="text-xl font-bold">Runner Dashboard</h1>
+      <p className="mt-1 text-sm text-white/80">
+        Pilih task yang ingin kamu kerjakan
+      </p>
     </header>
   );
 }

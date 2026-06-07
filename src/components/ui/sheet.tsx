@@ -39,7 +39,7 @@ export function Sheet({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-[1200] flex items-end justify-center">
       <div
         className="absolute inset-0 bg-ink/40 animate-[fadeIn_0.15s_ease-out]"
         onClick={onClose}
