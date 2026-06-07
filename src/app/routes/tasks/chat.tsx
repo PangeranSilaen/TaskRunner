@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Send, ArrowLeft, Loader2 } from "lucide-react";
+import { Send, ArrowLeft, Loader2, MessageCircle } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
 import { useTask } from "@/features/tasks/hooks";
 import { useTaskChat, useSendMessage } from "@/features/chat/hooks";
 import { useAuthStore } from "@/stores/auth-store";
@@ -48,21 +49,17 @@ export function ChatPage() {
   return (
     <div className="flex min-h-dvh w-full max-w-md flex-col bg-background">
       {/* Header */}
-      <header className="safe-top flex items-center gap-3 bg-primary px-4 py-3 text-white">
+      <header className="safe-top flex items-center gap-3 bg-gradient-to-r from-primary to-primary-dark px-3 py-3 text-white shadow-soft">
         <button
           onClick={() => navigate(-1)}
           aria-label="Kembali"
-          className="flex size-9 items-center justify-center rounded-lg hover:bg-white/10"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/15"
         >
           <ArrowLeft className="size-5" />
         </button>
-        <div className="flex size-9 items-center justify-center rounded-full bg-white/20 font-semibold">
-          {(otherName?.[0] ?? "?").toUpperCase()}
-        </div>
+        <Avatar name={otherName} size="md" className="bg-white/20 text-white" />
         <div className="min-w-0">
-          <p className="truncate font-semibold">
-            {otherName || "Lawan bicara"}
-          </p>
+          <p className="truncate font-bold">{otherName || "Lawan bicara"}</p>
           <p className="text-xs text-white/70">#{task?.public_code}</p>
         </div>
       </header>
@@ -74,9 +71,15 @@ export function ChatPage() {
             <Loader2 className="size-5 animate-spin text-primary" />
           </div>
         ) : messages.length === 0 ? (
-          <p className="py-8 text-center text-sm text-ink-muted">
-            Belum ada pesan. Sapa lawan bicaramu.
-          </p>
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+            <span className="flex size-14 items-center justify-center rounded-full bg-primary-soft text-primary">
+              <MessageCircle className="size-7" />
+            </span>
+            <p className="text-sm font-medium text-ink">Belum ada pesan</p>
+            <p className="max-w-[14rem] text-xs text-ink-muted">
+              Sapa lawan bicaramu untuk mulai berkoordinasi.
+            </p>
+          </div>
         ) : (
           messages.map((m) => {
             const mine = m.sender_id === userId;
@@ -89,14 +92,14 @@ export function ChatPage() {
                   className={cn(
                     "max-w-[75%] rounded-2xl px-3.5 py-2 text-sm",
                     mine
-                      ? "rounded-br-sm bg-primary text-white"
-                      : "rounded-bl-sm bg-surface text-ink shadow-soft",
+                      ? "rounded-br-md bg-primary text-white"
+                      : "rounded-bl-md bg-surface text-ink shadow-soft",
                   )}
                 >
                   <p className="whitespace-pre-wrap break-words">{m.message}</p>
                   <p
                     className={cn(
-                      "mt-0.5 text-[10px]",
+                      "mt-0.5 text-right text-[10px]",
                       mine ? "text-white/70" : "text-ink-muted",
                     )}
                   >
@@ -123,9 +126,9 @@ export function ChatPage() {
         />
         <button
           type="submit"
-          disabled={!text.trim()}
+          disabled={!text.trim() || send.isPending}
           aria-label="Kirim"
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-white disabled:opacity-50"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-white transition-transform active:scale-95 disabled:opacity-50"
         >
           <Send className="size-5" />
         </button>
