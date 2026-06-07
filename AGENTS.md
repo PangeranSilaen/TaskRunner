@@ -17,6 +17,17 @@ this repository. Read this before making changes.
 Skills live in `.agents/skills/`. The `multi-brain` skill documents the full
 memory workflow.
 
+## Language (MANDATORY)
+
+- All user-facing UI copy MUST be in Bahasa Indonesia. This is non-negotiable.
+- Common technical terms MAY stay in English when they read more naturally:
+  `runner`, `task`, `status`, `filter`, `dashboard`, `chat`, `urgent`.
+- Error/empty/loading messages shown to users must be human, friendly Indonesian
+  (see `dokumentasi/plan/03-...` §15) — never raw database/API errors.
+- Agents MUST reply to the user (chat, summaries, plans, docs) in Bahasa
+  Indonesia, except for English technical terms. Code identifiers and code
+  comments stay in English.
+
 ## What This Project Is
 
 Task Runner — a mobile-first PWA that connects ITK campus students who need small
