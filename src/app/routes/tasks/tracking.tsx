@@ -4,12 +4,14 @@ import { Loader2, MessageCircle, Phone, MapPin } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { StatusStepper } from "@/components/task/status-stepper";
+import { RatingModal } from "@/components/task/rating-modal";
 import { LocationPicker } from "@/components/map/location-picker";
 import {
   useTask,
   useStartTask,
   useCompleteTask,
 } from "@/features/tasks/hooks";
+import { useTaskRating } from "@/features/ratings/hooks";
 import { useAuthStore } from "@/stores/auth-store";
 import { TASK_TYPE } from "@/lib/constants";
 import { toWhatsAppNumber } from "@/lib/utils/validation";
@@ -19,9 +21,11 @@ export function TrackingPage() {
   const navigate = useNavigate();
   const userId = useAuthStore((s) => s.session?.user.id);
   const { data: task, isLoading } = useTask(id);
+  const { data: existingRating } = useTaskRating(id);
   const start = useStartTask();
   const complete = useCompleteTask();
   const [error, setError] = useState<string | null>(null);
+  const [showRating, setShowRating] = useState(false);
 
   if (isLoading) {
     return (
@@ -65,6 +69,7 @@ export function TrackingPage() {
     setError(null);
     try {
       await complete.mutateAsync(task.id);
+      if (isCustomer) setShowRating(true);
     } catch {
       setError("Gagal menandai selesai. Coba lagi.");
     }
@@ -176,11 +181,27 @@ export function TrackingPage() {
         )}
 
         {task.status === "completed" && (
-          <Button variant="secondary" fullWidth onClick={() => navigate("/tasks")}>
-            Kembali ke My Tasks
-          </Button>
+          <>
+            {isCustomer && !existingRating && (
+              <Button fullWidth size="lg" onClick={() => setShowRating(true)}>
+                Beri Rating
+              </Button>
+            )}
+            <Button variant="secondary" fullWidth onClick={() => navigate("/tasks")}>
+              Kembali ke My Tasks
+            </Button>
+          </>
         )}
       </div>
+
+      {showRating && task.runner_id && (
+        <RatingModal
+          taskId={task.id}
+          runnerId={task.runner_id}
+          runnerName={task.runner?.full_name ?? undefined}
+          onClose={() => setShowRating(false)}
+        />
+      )}
     </div>
   );
 }

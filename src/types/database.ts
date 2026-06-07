@@ -95,6 +95,128 @@ export type Database = {
         }
         Relationships: []
       }
+      ratings: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          rating: number
+          review: string | null
+          runner_id: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          rating: number
+          review?: string | null
+          runner_id: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          rating?: number
+          review?: string | null
+          runner_id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_runner_id_fkey"
+            columns: ["runner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: true
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      runner_availability_sessions: {
+        Row: {
+          ended_at: string | null
+          id: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          ended_at?: string | null
+          id?: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          ended_at?: string | null
+          id?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "runner_availability_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      runner_profiles: {
+        Row: {
+          active_hours: number
+          availability_status: boolean
+          average_rating: number
+          completed_tasks: number
+          last_active_at: string | null
+          total_earnings: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_hours?: number
+          availability_status?: boolean
+          average_rating?: number
+          completed_tasks?: number
+          last_active_at?: string | null
+          total_earnings?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_hours?: number
+          availability_status?: boolean
+          average_rating?: number
+          completed_tasks?: number
+          last_active_at?: string | null
+          total_earnings?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "runner_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_messages: {
         Row: {
           created_at: string
@@ -316,6 +438,10 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_task_participant: { Args: { p_task_id: string }; Returns: boolean }
       is_verified: { Args: never; Returns: boolean }
+      set_runner_availability: {
+        Args: { p_active: boolean }
+        Returns: undefined
+      }
       start_task: { Args: { p_task_id: string }; Returns: undefined }
       submit_verification: {
         Args: { p_ktm_url: string; p_phone: string }

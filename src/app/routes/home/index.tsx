@@ -1,4 +1,4 @@
-import { Plus, Bike } from "lucide-react";
+import { Plus, Bike, Star } from "lucide-react";
 import { Link, Navigate } from "react-router-dom";
 import {
   useAuthStore,
@@ -7,6 +7,7 @@ import {
 } from "@/stores/auth-store";
 import { VerificationBanner } from "@/components/layout/verification-banner";
 import { useMyTasks } from "@/features/tasks/hooks";
+import { useAvailableRunners } from "@/features/runner/hooks";
 import { TaskCard } from "@/components/task/task-card";
 import { SkeletonCard } from "@/components/task/empty-state";
 import { cn } from "@/lib/utils/cn";
@@ -16,6 +17,7 @@ export function HomePage() {
   const isVerified = useAuthStore(selectIsVerified);
   const isAdmin = useAuthStore(selectIsAdmin);
   const { data: activeTasks, isLoading } = useMyTasks("active");
+  const { data: runners } = useAvailableRunners(5);
 
   const firstName = profile?.full_name?.split(" ")[0] || "Mahasiswa";
 
@@ -75,6 +77,43 @@ export function HomePage() {
             </div>
           )}
         </section>
+
+        {/* Nearby runners */}
+        {runners && runners.length > 0 && (
+          <section>
+            <h2 className="mb-2 text-sm font-semibold text-ink">
+              Runner Terdekat
+            </h2>
+            <div className="flex flex-col gap-2">
+              {runners.map((r) => (
+                <div
+                  key={r.user_id}
+                  className="flex items-center gap-3 rounded-card bg-surface p-3 shadow-soft"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary-soft font-semibold text-primary">
+                    {(r.profile?.full_name?.[0] ?? "?").toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-ink">
+                      {r.profile?.full_name || "Runner"}
+                    </p>
+                    <p className="flex items-center gap-1 text-xs text-ink-soft">
+                      <Star className="size-3 fill-warning text-warning" />
+                      {r.average_rating > 0
+                        ? r.average_rating.toFixed(1)
+                        : "Baru"}
+                      {" · "}
+                      {r.completed_tasks} task
+                    </p>
+                  </div>
+                  <span className="flex items-center gap-1 text-xs text-success">
+                    <span className="size-2 rounded-full bg-success" /> online
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

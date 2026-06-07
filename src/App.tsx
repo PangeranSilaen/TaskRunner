@@ -15,6 +15,7 @@ import { RegisterPage } from "@/app/routes/auth/register";
 import { HomePage } from "@/app/routes/home";
 import { ProfilePage } from "@/app/routes/profile";
 import { VerificationPage } from "@/app/routes/profile/verification";
+import { SettingsPage } from "@/app/routes/profile/settings";
 import { AdminIndexPage } from "@/app/routes/admin";
 import { AdminVerificationsPage } from "@/app/routes/admin/verifications";
 import { MyTasksPage } from "@/app/routes/tasks";
@@ -56,6 +57,14 @@ export function App() {
         element={
           <RequireAuth>
             <VerificationPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/profile/settings"
+        element={
+          <RequireAuth>
+            <SettingsPage />
           </RequireAuth>
         }
       />
