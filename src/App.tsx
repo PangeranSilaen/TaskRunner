@@ -17,7 +17,12 @@ import { ProfilePage } from "@/app/routes/profile";
 import { VerificationPage } from "@/app/routes/profile/verification";
 import { AdminIndexPage } from "@/app/routes/admin";
 import { AdminVerificationsPage } from "@/app/routes/admin/verifications";
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { MyTasksPage } from "@/app/routes/tasks";
+import { NewTaskPage } from "@/app/routes/tasks/new";
+import { TaskDetailPage } from "@/app/routes/tasks/detail";
+import { TrackingPage } from "@/app/routes/tasks/tracking";
+import { RunnerDashboardPage } from "@/app/routes/runner";
+import { RunnerTaskDetailPage } from "@/app/routes/runner/detail";
 
 export function App() {
   const init = useAuthStore((s) => s.init);
@@ -54,6 +59,40 @@ export function App() {
         }
       />
 
+      {/* Standalone task screens (no bottom nav) */}
+      <Route
+        path="/tasks/new"
+        element={
+          <RequireAuth>
+            <NewTaskPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/tasks/:id"
+        element={
+          <RequireAuth>
+            <TaskDetailPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/tasks/:id/tracking"
+        element={
+          <RequireAuth>
+            <TrackingPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/runner/tasks/:id"
+        element={
+          <RequireAuth>
+            <RunnerTaskDetailPage />
+          </RequireAuth>
+        }
+      />
+
       {/* Main tabs */}
       <Route
         element={
@@ -63,26 +102,8 @@ export function App() {
         }
       >
         <Route path="/home" element={<HomePage />} />
-        <Route
-          path="/tasks"
-          element={
-            <PlaceholderPage
-              title="My Tasks"
-              subtitle="Kelola semua task kamu di sini"
-              message="Daftar task akan tersedia pada fase berikutnya."
-            />
-          }
-        />
-        <Route
-          path="/runner"
-          element={
-            <PlaceholderPage
-              title="Runner Dashboard"
-              subtitle="Pilih task yang ingin kamu kerjakan"
-              message="Daftar task tersedia akan muncul pada fase berikutnya."
-            />
-          }
-        />
+        <Route path="/tasks" element={<MyTasksPage />} />
+        <Route path="/runner" element={<RunnerDashboardPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
 

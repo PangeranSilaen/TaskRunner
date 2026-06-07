@@ -53,6 +53,112 @@ export type Database = {
         }
         Relationships: []
       }
+      tasks: {
+        Row: {
+          accepted_at: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          category: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          description: string
+          distance_label: string | null
+          id: string
+          latitude: number | null
+          location_name: string
+          longitude: number | null
+          payment_method: string
+          payment_status: string
+          platform_fee: number
+          public_code: string
+          runner_fee: number
+          runner_id: string | null
+          started_at: string | null
+          status: string
+          task_type: string
+          title: string
+          total_fee: number
+        }
+        Insert: {
+          accepted_at?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          category: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          description: string
+          distance_label?: string | null
+          id?: string
+          latitude?: number | null
+          location_name: string
+          longitude?: number | null
+          payment_method: string
+          payment_status?: string
+          platform_fee: number
+          public_code?: string
+          runner_fee: number
+          runner_id?: string | null
+          started_at?: string | null
+          status?: string
+          task_type: string
+          title: string
+          total_fee: number
+        }
+        Update: {
+          accepted_at?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          category?: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string
+          distance_label?: string | null
+          id?: string
+          latitude?: number | null
+          location_name?: string
+          longitude?: number | null
+          payment_method?: string
+          payment_status?: string
+          platform_fee?: number
+          public_code?: string
+          runner_fee?: number
+          runner_id?: string | null
+          started_at?: string | null
+          status?: string
+          task_type?: string
+          title?: string
+          total_fee?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_cancelled_by_fkey"
+            columns: ["cancelled_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_runner_id_fkey"
+            columns: ["runner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       verification_requests: {
         Row: {
           campus_email: string
@@ -115,12 +221,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_task: { Args: { p_task_id: string }; Returns: undefined }
       admin_review_verification: {
         Args: { p_approve: boolean; p_reason?: string; p_user_id: string }
         Returns: undefined
       }
+      cancel_task: {
+        Args: { p_reason?: string; p_task_id: string }
+        Returns: undefined
+      }
+      complete_task: { Args: { p_task_id: string }; Returns: undefined }
+      has_active_runner_task: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_verified: { Args: never; Returns: boolean }
+      start_task: { Args: { p_task_id: string }; Returns: undefined }
       submit_verification: {
         Args: { p_ktm_url: string; p_phone: string }
         Returns: undefined

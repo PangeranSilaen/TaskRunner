@@ -6,12 +6,16 @@ import {
   selectIsAdmin,
 } from "@/stores/auth-store";
 import { VerificationBanner } from "@/components/layout/verification-banner";
+import { useMyTasks } from "@/features/tasks/hooks";
+import { TaskCard } from "@/components/task/task-card";
+import { SkeletonCard } from "@/components/task/empty-state";
 import { cn } from "@/lib/utils/cn";
 
 export function HomePage() {
   const profile = useAuthStore((s) => s.profile);
   const isVerified = useAuthStore(selectIsVerified);
   const isAdmin = useAuthStore(selectIsAdmin);
+  const { data: activeTasks, isLoading } = useMyTasks("active");
 
   const firstName = profile?.full_name?.split(" ")[0] || "Mahasiswa";
 
@@ -49,12 +53,27 @@ export function HomePage() {
           />
         </div>
 
-        {/* Active tasks placeholder */}
+        {/* Active tasks */}
         <section>
           <h2 className="mb-2 text-sm font-semibold text-ink">Task Aktif</h2>
-          <div className="rounded-card border border-dashed border-line bg-surface p-6 text-center text-sm text-ink-muted">
-            Belum ada task aktif.
-          </div>
+          {isLoading ? (
+            <SkeletonCard />
+          ) : !activeTasks || activeTasks.length === 0 ? (
+            <div className="rounded-card border border-dashed border-line bg-surface p-6 text-center text-sm text-ink-muted">
+              Belum ada task aktif.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {activeTasks.slice(0, 3).map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  to={`/tasks/${task.id}`}
+                  feeVariant="customer"
+                />
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>
