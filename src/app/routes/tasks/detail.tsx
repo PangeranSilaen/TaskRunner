@@ -7,6 +7,7 @@ import {
   Phone,
   Flag,
   Hash,
+  Ban,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
@@ -118,11 +119,33 @@ export function TaskDetailPage() {
       />
 
       <div className="flex flex-col gap-4 p-5">
-        {/* Stepper */}
+        {/* Stepper (hidden when cancelled) */}
         {task.status !== "cancelled" && (
           <Card className="p-4">
             <StatusStepper status={task.status} />
           </Card>
+        )}
+
+        {/* Cancellation banner with reason */}
+        {task.status === "cancelled" && (
+          <div className="flex items-start gap-3 rounded-card bg-danger/10 p-4">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-danger/15 text-danger">
+              <Ban className="size-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-danger">Task dibatalkan</p>
+              {task.cancellation_reason ? (
+                <p className="mt-0.5 text-sm text-ink-soft">
+                  <span className="font-medium text-ink">Alasan: </span>
+                  {task.cancellation_reason}
+                </p>
+              ) : (
+                <p className="mt-0.5 text-sm text-ink-muted">
+                  Tidak ada alasan yang dicantumkan.
+                </p>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Title + desc */}
