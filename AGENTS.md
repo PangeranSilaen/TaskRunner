@@ -28,6 +28,14 @@ memory workflow.
   Indonesia, except for English technical terms. Code identifiers and code
   comments stay in English.
 
+## Docs Index
+
+- `docs/plan/2026-06-07-mvp-phases.md` — full MVP implementation plan (Phase 2-6),
+  DB schema, RLS, per-phase file lists.
+- `docs/browser-testing.md` — how to smoke-test the UI with `agent-browser`
+  (React Hook Form + Supabase localStorage gotchas, demo accounts, login recipe,
+  troubleshooting). READ THIS before any browser automation on this repo.
+
 ## What This Project Is
 
 Task Runner — a mobile-first PWA that connects ITK campus students who need small
@@ -79,7 +87,24 @@ auto-settlement on MVP).
 
 ## Current State
 
-Phase 1 (Foundation) is complete: scaffold, design system, `profiles` table +
-auth trigger + RLS, login/register with ITK email validation, route guards, and
-the app shell. See `.multibrain/indexes/foundation.md` for details and the
-remaining phase roadmap.
+MVP complete (Phase 1-6), deployed to production and smoke-tested:
+- Phase 1: scaffold, design system, `profiles` + auth trigger + RLS, login/register
+  (ITK email), route guards, app shell.
+- Phase 2: verification (`verification_requests`, KTM upload to `ktm-photos`,
+  admin approve/reject, status flow).
+- Phase 3: tasks core (`tasks` + `public_code`, buat task w/ Leaflet picker,
+  My Tasks, runner dashboard, accept/start/complete/cancel via RPC).
+- Phase 4: realtime chat (`task_messages`), payment record (`payment_records`,
+  transfer proof to `payment-proofs`, runner confirm), WhatsApp deep-link.
+- Phase 5: `ratings` + `runner_profiles` (+ availability sessions), stat triggers,
+  tracking page, rating modal, profile stats, settings.
+- Phase 6: `notifications` (realtime + bell) + lifecycle triggers, `reports`,
+  admin dashboard/monitoring/reports.
+
+Seed: 5 demo accounts (pwd `TaskRunner123`) + 4 sample tasks + runner stats.
+See `docs/browser-testing.md` for accounts. Live: https://taskrunner-swart.vercel.app
+
+Intentional Supabase advisor WARNs (not errors): `profiles`/`runner_profiles`
+readable by authenticated (needed to show names/runner discovery); SECURITY
+DEFINER RPCs callable by authenticated (gated internally + via RLS); anon access
+revoked on all app tables/functions. See `.multibrain/indexes/foundation.md`.
