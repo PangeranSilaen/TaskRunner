@@ -1,14 +1,22 @@
 import { Plus, Bike } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useAuthStore, selectIsVerified } from "@/stores/auth-store";
+import { Link, Navigate } from "react-router-dom";
+import {
+  useAuthStore,
+  selectIsVerified,
+  selectIsAdmin,
+} from "@/stores/auth-store";
 import { VerificationBanner } from "@/components/layout/verification-banner";
 import { cn } from "@/lib/utils/cn";
 
 export function HomePage() {
   const profile = useAuthStore((s) => s.profile);
   const isVerified = useAuthStore(selectIsVerified);
+  const isAdmin = useAuthStore(selectIsAdmin);
 
   const firstName = profile?.full_name?.split(" ")[0] || "Mahasiswa";
+
+  // Admins use the dedicated admin panel.
+  if (isAdmin) return <Navigate to="/admin" replace />;
 
   return (
     <div>

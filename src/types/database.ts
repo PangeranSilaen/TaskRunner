@@ -53,12 +53,78 @@ export type Database = {
         }
         Relationships: []
       }
+      verification_requests: {
+        Row: {
+          campus_email: string
+          created_at: string
+          id: string
+          ktm_photo_url: string | null
+          phone_number: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          campus_email: string
+          created_at?: string
+          id?: string
+          ktm_photo_url?: string | null
+          phone_number: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          campus_email?: string
+          created_at?: string
+          id?: string
+          ktm_photo_url?: string | null
+          phone_number?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_review_verification: {
+        Args: { p_approve: boolean; p_reason?: string; p_user_id: string }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
+      is_verified: { Args: never; Returns: boolean }
+      submit_verification: {
+        Args: { p_ktm_url: string; p_phone: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

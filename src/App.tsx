@@ -5,14 +5,18 @@ import { FullScreenLoader } from "@/components/ui/loader";
 import {
   RequireAuth,
   RequireGuest,
+  RequireAdmin,
 } from "@/features/auth/guards";
 import { AuthLayout } from "@/components/layout/auth-layout";
 import { AppLayout } from "@/components/layout/app-layout";
+import { AdminLayout } from "@/components/layout/admin-layout";
 import { LoginPage } from "@/app/routes/auth/login";
 import { RegisterPage } from "@/app/routes/auth/register";
 import { HomePage } from "@/app/routes/home";
 import { ProfilePage } from "@/app/routes/profile";
 import { VerificationPage } from "@/app/routes/profile/verification";
+import { AdminIndexPage } from "@/app/routes/admin";
+import { AdminVerificationsPage } from "@/app/routes/admin/verifications";
 import { PlaceholderPage } from "@/components/layout/placeholder-page";
 
 export function App() {
@@ -81,6 +85,41 @@ export function App() {
         />
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
+
+      {/* Admin (admin role only) */}
+      <Route
+        element={
+          <RequireAdmin>
+            <AdminLayout />
+          </RequireAdmin>
+        }
+      >
+        <Route path="/admin/verifications" element={<AdminVerificationsPage />} />
+        <Route
+          path="/admin/tasks"
+          element={
+            <div className="rounded-card border border-dashed border-line bg-surface p-8 text-center text-sm text-ink-muted">
+              Monitoring task tersedia pada fase berikutnya.
+            </div>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <div className="rounded-card border border-dashed border-line bg-surface p-8 text-center text-sm text-ink-muted">
+              Laporan masalah tersedia pada fase berikutnya.
+            </div>
+          }
+        />
+      </Route>
+      <Route
+        path="/admin"
+        element={
+          <RequireAdmin>
+            <AdminIndexPage />
+          </RequireAdmin>
+        }
+      />
 
       {/* Fallbacks */}
       <Route path="/" element={<Navigate to="/home" replace />} />
