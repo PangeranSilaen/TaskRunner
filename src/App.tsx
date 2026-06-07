@@ -18,6 +18,8 @@ import { VerificationPage } from "@/app/routes/profile/verification";
 import { SettingsPage } from "@/app/routes/profile/settings";
 import { AdminIndexPage } from "@/app/routes/admin";
 import { AdminVerificationsPage } from "@/app/routes/admin/verifications";
+import { AdminTasksPage } from "@/app/routes/admin/tasks";
+import { AdminReportsPage } from "@/app/routes/admin/reports";
 import { MyTasksPage } from "@/app/routes/tasks";
 import { NewTaskPage } from "@/app/routes/tasks/new";
 import { TaskDetailPage } from "@/app/routes/tasks/detail";
@@ -133,32 +135,11 @@ export function App() {
           </RequireAdmin>
         }
       >
+        <Route path="/admin" element={<AdminIndexPage />} />
         <Route path="/admin/verifications" element={<AdminVerificationsPage />} />
-        <Route
-          path="/admin/tasks"
-          element={
-            <div className="rounded-card border border-dashed border-line bg-surface p-8 text-center text-sm text-ink-muted">
-              Monitoring task tersedia pada fase berikutnya.
-            </div>
-          }
-        />
-        <Route
-          path="/admin/reports"
-          element={
-            <div className="rounded-card border border-dashed border-line bg-surface p-8 text-center text-sm text-ink-muted">
-              Laporan masalah tersedia pada fase berikutnya.
-            </div>
-          }
-        />
+        <Route path="/admin/tasks" element={<AdminTasksPage />} />
+        <Route path="/admin/reports" element={<AdminReportsPage />} />
       </Route>
-      <Route
-        path="/admin"
-        element={
-          <RequireAdmin>
-            <AdminIndexPage />
-          </RequireAdmin>
-        }
-      />
 
       {/* Fallbacks */}
       <Route path="/" element={<Navigate to="/home" replace />} />

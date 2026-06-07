@@ -6,6 +6,7 @@ import {
   selectIsAdmin,
 } from "@/stores/auth-store";
 import { VerificationBanner } from "@/components/layout/verification-banner";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import { useMyTasks } from "@/features/tasks/hooks";
 import { useAvailableRunners } from "@/features/runner/hooks";
 import { TaskCard } from "@/components/task/task-card";
@@ -28,10 +29,15 @@ export function HomePage() {
     <div>
       {/* Teal header */}
       <header className="safe-top rounded-b-3xl bg-primary px-5 pb-6 pt-6 text-white">
-        <h1 className="text-xl font-bold">Halo, {firstName}!</h1>
-        <p className="mt-1 text-sm text-white/80">
-          Ada yang bisa kami bantu hari ini?
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-xl font-bold">Halo, {firstName}!</h1>
+            <p className="mt-1 text-sm text-white/80">
+              Ada yang bisa kami bantu hari ini?
+            </p>
+          </div>
+          <NotificationBell />
+        </div>
       </header>
 
       <div className="flex flex-col gap-5 p-5">

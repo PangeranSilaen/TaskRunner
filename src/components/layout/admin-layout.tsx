@@ -1,13 +1,14 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { ShieldCheck, ClipboardList, Flag, LogOut } from "lucide-react";
+import { LayoutDashboard, ShieldCheck, ClipboardList, Flag, LogOut } from "lucide-react";
 import { signOut } from "@/features/auth/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { cn } from "@/lib/utils/cn";
 
 const navItems = [
-  { to: "/admin/verifications", label: "Verifikasi", icon: ShieldCheck },
-  { to: "/admin/tasks", label: "Task", icon: ClipboardList },
-  { to: "/admin/reports", label: "Laporan", icon: Flag },
+  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/admin/verifications", label: "Verifikasi", icon: ShieldCheck, end: false },
+  { to: "/admin/tasks", label: "Task", icon: ClipboardList, end: false },
+  { to: "/admin/reports", label: "Laporan", icon: Flag, end: false },
 ] as const;
 
 export function AdminLayout() {
@@ -36,11 +37,12 @@ export function AdminLayout() {
         </button>
       </header>
 
-      <nav className="grid grid-cols-3 border-b border-line bg-surface">
-        {navItems.map(({ to, label, icon: Icon }) => (
+      <nav className="grid grid-cols-4 border-b border-line bg-surface">
+        {navItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
+            end={end}
             className={({ isActive }) =>
               cn(
                 "flex flex-col items-center gap-1 py-2.5 text-xs font-medium",
