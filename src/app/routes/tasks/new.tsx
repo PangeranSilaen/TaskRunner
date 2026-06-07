@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LocationPicker } from "@/components/map/location-picker";
 import { FeeBreakdown } from "@/components/task/fee-breakdown";
+import { useToast } from "@/components/ui/toast";
 import {
   createTaskSchema,
   type CreateTaskInput,
@@ -22,13 +23,13 @@ export function NewTaskPage() {
   const navigate = useNavigate();
   const isVerified = useAuthStore(selectIsVerified);
   const createTask = useCreateTask();
+  const toast = useToast();
 
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null,
   );
   const [taskType, setTaskType] = useState<"regular" | "urgent">("regular");
   const [runnerFee, setRunnerFee] = useState<number>(TASK_TYPE.regular.minFee);
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -64,12 +65,12 @@ export function NewTaskPage() {
   };
 
   const onSubmit = async (values: CreateTaskInput) => {
-    setServerError(null);
     try {
       const task = await createTask.mutateAsync(values);
+      toast.success("Task berhasil diposting!");
       navigate(`/tasks/${task.id}`, { replace: true });
     } catch {
-      setServerError("Gagal memposting task. Silakan coba lagi.");
+      toast.error("Gagal memposting task. Silakan coba lagi.");
     }
   };
 
@@ -79,9 +80,9 @@ export function NewTaskPage() {
     <div className="min-h-dvh w-full max-w-md bg-background">
       <PageHeader title="Buat Task Baru" />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 p-5">
         {!isVerified && (
-          <p className="rounded-lg bg-warning/10 px-3 py-2 text-sm text-warning">
+          <p className="rounded-xl bg-warning/10 px-3 py-2.5 text-sm font-medium text-amber-700">
             Akun kamu perlu diverifikasi terlebih dahulu.
           </p>
         )}
@@ -136,7 +137,7 @@ export function NewTaskPage() {
             error={errors.locationName?.message}
             {...register("locationName")}
           />
-          <div className="relative">
+          <div className="relative overflow-hidden rounded-xl">
             <LocationPicker value={coords} onChange={onPickLocation} />
             {!coords && (
               <div className="pointer-events-none absolute inset-0 z-[400] flex items-center justify-center">
@@ -164,13 +165,13 @@ export function NewTaskPage() {
                   type="button"
                   onClick={() => selectType(type)}
                   className={cn(
-                    "flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition",
+                    "flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-colors",
                     active
                       ? "border-primary bg-primary-soft/50"
                       : "border-line bg-surface",
                   )}
                 >
-                  <span className="font-semibold text-ink">{meta.label}</span>
+                  <span className="font-bold text-ink">{meta.label}</span>
                   <span className="text-xs text-ink-soft">
                     {formatRupiah(meta.minFee)} - {formatRupiah(meta.maxFee)}
                     {type === "urgent" ? "+" : ""}
@@ -183,10 +184,10 @@ export function NewTaskPage() {
         </div>
 
         {/* Runner fee slider */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-ink">Biaya Runner</label>
-            <span className="font-semibold text-primary-dark">
+            <span className="text-lg font-bold text-primary-dark">
               {formatRupiah(runnerFee)}
             </span>
           </div>
@@ -197,8 +198,12 @@ export function NewTaskPage() {
             step={500}
             value={runnerFee}
             onChange={(e) => onFeeChange(Number(e.target.value))}
-            className="accent-primary"
+            className="h-2 w-full cursor-pointer appearance-none rounded-full bg-primary-soft accent-primary"
           />
+          <div className="flex justify-between text-[11px] text-ink-muted">
+            <span>{formatRupiah(typeMeta.minFee)}</span>
+            <span>{formatRupiah(typeMeta.maxFee)}</span>
+          </div>
         </div>
 
         {/* Payment method */}
@@ -207,14 +212,20 @@ export function NewTaskPage() {
             Metode Pembayaran
           </label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary-soft/50">
-              <input type="radio" value="cash" {...register("paymentMethod")} />
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-line bg-surface px-3 py-2.5 text-sm font-medium has-[:checked]:border-primary has-[:checked]:bg-primary-soft/50">
+              <input
+                type="radio"
+                value="cash"
+                className="accent-primary"
+                {...register("paymentMethod")}
+              />
               Cash
             </label>
-            <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5 text-sm has-[:checked]:border-primary has-[:checked]:bg-primary-soft/50">
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-line bg-surface px-3 py-2.5 text-sm font-medium has-[:checked]:border-primary has-[:checked]:bg-primary-soft/50">
               <input
                 type="radio"
                 value="transfer"
+                className="accent-primary"
                 {...register("paymentMethod")}
               />
               Transfer
@@ -224,12 +235,6 @@ export function NewTaskPage() {
 
         {/* Fee estimate */}
         <FeeBreakdown runnerFee={runnerFee} variant="customer" />
-
-        {serverError && (
-          <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
-            {serverError}
-          </p>
-        )}
 
         <Button
           type="submit"
