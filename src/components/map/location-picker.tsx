@@ -42,6 +42,16 @@ export function LocationPicker({
       center: [start.lat, start.lng],
       zoom: 15,
       zoomControl: !readOnly,
+      // In read-only mode the map is a static preview: disable every touch
+      // gesture so vertical page scrolling isn't hijacked on mobile (the map
+      // otherwise captures the drag, blocking scroll on Android and causing
+      // the "snap back" on iOS).
+      dragging: !readOnly,
+      touchZoom: !readOnly,
+      scrollWheelZoom: !readOnly,
+      doubleClickZoom: !readOnly,
+      boxZoom: !readOnly,
+      keyboard: !readOnly,
     });
     mapRef.current = map;
 
@@ -97,7 +107,9 @@ export function LocationPicker({
     <div
       ref={containerRef}
       style={{ height }}
-      className="w-full overflow-hidden rounded-xl border border-line"
+      className={`w-full overflow-hidden rounded-xl border border-line${
+        readOnly ? " leaflet-readonly" : ""
+      }`}
     />
   );
 }

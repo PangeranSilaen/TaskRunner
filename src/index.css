@@ -112,3 +112,13 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =====================================================================
+   Read-only map preview: Leaflet sets `touch-action: none` on its
+   container to capture gestures. For a static preview that breaks vertical
+   page scrolling on mobile (drag gets hijacked), so allow vertical panning.
+   ===================================================================== */
+.leaflet-readonly,
+.leaflet-readonly .leaflet-container {
+  touch-action: pan-y !important;
+}
