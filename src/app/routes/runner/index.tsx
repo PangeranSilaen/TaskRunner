@@ -16,6 +16,24 @@ const chips = [
 
 type Chip = (typeof chips)[number]["key"];
 
+function Header() {
+  return (
+    <header className="safe-top rounded-b-[2rem] bg-gradient-to-br from-primary to-primary-dark px-5 pb-6 pt-6 text-white shadow-card">
+      <div className="flex items-center gap-3">
+        <span className="flex size-11 items-center justify-center rounded-2xl bg-white/15">
+          <Bike className="size-6" />
+        </span>
+        <div>
+          <h1 className="text-xl font-bold">Runner Dashboard</h1>
+          <p className="text-sm text-white/80">
+            Pilih task yang ingin kamu kerjakan
+          </p>
+        </div>
+      </div>
+    </header>
+  );
+}
+
 export function RunnerDashboardPage() {
   const isVerified = useAuthStore(selectIsVerified);
   const [chip, setChip] = useState<Chip>("all");
@@ -27,12 +45,7 @@ export function RunnerDashboardPage() {
   if (!isVerified) {
     return (
       <div>
-        <header className="safe-top rounded-b-3xl bg-primary px-5 pb-6 pt-6 text-white">
-          <h1 className="text-xl font-bold">Runner Dashboard</h1>
-          <p className="mt-1 text-sm text-white/80">
-            Pilih task yang ingin kamu kerjakan
-          </p>
-        </header>
+        <Header />
         <div className="p-5">
           <VerificationBanner />
         </div>
@@ -42,24 +55,19 @@ export function RunnerDashboardPage() {
 
   return (
     <div>
-      <header className="safe-top rounded-b-3xl bg-primary px-5 pb-6 pt-6 text-white">
-        <h1 className="text-xl font-bold">Runner Dashboard</h1>
-        <p className="mt-1 text-sm text-white/80">
-          Pilih task yang ingin kamu kerjakan
-        </p>
-      </header>
+      <Header />
 
       {/* Filter chips */}
-      <div className="flex gap-2 overflow-x-auto px-5 py-3">
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-6 py-3">
         {chips.map((c) => (
           <button
             key={c.key}
             onClick={() => setChip(c.key)}
             className={cn(
-              "shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              "shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors",
               chip === c.key
-                ? "bg-primary text-white"
-                : "bg-surface text-ink-soft border border-line",
+                ? "bg-primary text-white shadow-soft"
+                : "border border-line bg-surface text-ink-soft",
             )}
           >
             {c.label}
@@ -75,12 +83,13 @@ export function RunnerDashboardPage() {
           </>
         ) : !tasks || tasks.length === 0 ? (
           <EmptyState
+            icon={Bike}
+            title={chip === "urgent" ? "Tidak ada task urgent" : "Belum ada task"}
             message={
               chip === "urgent"
-                ? "Belum ada task urgent."
-                : "Belum ada task tersedia."
+                ? "Saat ini tidak ada task urgent. Coba lihat semua task."
+                : "Belum ada task tersedia. Cek lagi nanti, ya."
             }
-            icon={Bike}
           />
         ) : (
           tasks.map((task) => (
@@ -90,7 +99,7 @@ export function RunnerDashboardPage() {
               feeVariant="runner"
               footer={
                 <Link to={`/runner/tasks/${task.id}`}>
-                  <Button size="sm">Detail</Button>
+                  <Button size="sm">Lihat Detail</Button>
                 </Link>
               }
             />
