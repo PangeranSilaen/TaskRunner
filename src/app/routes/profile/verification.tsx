@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ShieldCheck, Clock, XCircle, ArrowLeft, Upload } from "lucide-react";
+import { ShieldCheck, Clock, XCircle, Upload } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/layout/page-header";
+import { useToast } from "@/components/ui/toast";
 import { VERIFICATION_STATUS } from "@/lib/constants";
 import {
   verificationSchema,
@@ -28,6 +31,7 @@ export function VerificationPage() {
   const profile = useAuthStore((s) => s.profile);
   const { data: request } = useMyVerification();
   const submit = useSubmitVerification();
+  const toast = useToast();
 
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -71,6 +75,7 @@ export function VerificationPage() {
     }
     try {
       await submit.mutateAsync({ phone: values.phone, file });
+      toast.success("Verifikasi terkirim. Menunggu tinjauan admin.");
     } catch {
       setFormError("Gagal mengirim verifikasi. Silakan coba lagi.");
     }
@@ -78,19 +83,10 @@ export function VerificationPage() {
 
   return (
     <div className="min-h-dvh w-full max-w-md bg-background">
-      <header className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3">
-        <button
-          onClick={() => navigate(-1)}
-          aria-label="Kembali"
-          className="flex size-9 items-center justify-center rounded-lg hover:bg-surface-muted"
-        >
-          <ArrowLeft className="size-5" />
-        </button>
-        <h1 className="font-semibold text-ink">Verifikasi Akun</h1>
-      </header>
+      <PageHeader title="Verifikasi Akun" onBack={() => navigate(-1)} />
 
       <div className="flex flex-col gap-5 p-5">
-        <div className="flex flex-col items-center gap-3 rounded-card bg-surface p-6 text-center shadow-card">
+        <Card className="flex flex-col items-center gap-3 p-6 text-center">
           <span
             className={`flex size-16 items-center justify-center rounded-2xl ${visual.bg}`}
           >
@@ -106,7 +102,7 @@ export function VerificationPage() {
                 ? "Data kamu sedang ditinjau admin. Verifikasi biasanya memakan waktu 1x24 jam."
                 : "Lengkapi nomor telepon dan upload foto KTM untuk diverifikasi admin."}
           </p>
-        </div>
+        </Card>
 
         {/* Rejection reason */}
         {status === "rejected" && request?.rejection_reason && (
@@ -118,14 +114,14 @@ export function VerificationPage() {
 
         {/* Checklist when verified */}
         {status === "verified" && (
-          <div className="flex flex-col gap-2 rounded-card bg-surface p-4 shadow-card">
+          <Card className="flex flex-col gap-2 p-4">
             {["Email Kampus", "Nomor Telepon", "Foto KTM"].map((item) => (
               <div key={item} className="flex items-center gap-2 text-sm">
                 <ShieldCheck className="size-4 text-success" />
                 <span className="text-ink">{item}</span>
               </div>
             ))}
-          </div>
+          </Card>
         )}
 
         {/* Form (only when editable) */}
@@ -147,7 +143,7 @@ export function VerificationPage() {
               <span className="text-sm font-medium text-ink">
                 Foto Kartu Tanda Mahasiswa (KTM)
               </span>
-              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-line bg-surface-muted py-6 text-center">
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-line bg-surface-muted/60 py-6 text-center transition-colors hover:border-primary/40 hover:bg-primary-soft/20">
                 {preview ? (
                   <img
                     src={preview}
@@ -156,8 +152,10 @@ export function VerificationPage() {
                   />
                 ) : (
                   <>
-                    <Upload className="size-6 text-ink-muted" />
-                    <span className="text-sm text-ink-soft">
+                    <span className="flex size-12 items-center justify-center rounded-full bg-primary-soft text-primary">
+                      <Upload className="size-6" />
+                    </span>
+                    <span className="text-sm font-medium text-ink-soft">
                       Tap untuk pilih foto KTM
                     </span>
                   </>
