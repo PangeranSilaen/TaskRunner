@@ -1,0 +1,28 @@
+-- =====================================================================
+-- Seed data — Task Runner
+-- =====================================================================
+-- File ini dijalankan otomatis setelah migration saat `supabase db reset`
+-- (khusus development lokal via `supabase start`).
+--
+-- Catatan penting:
+-- Akun login (auth.users) TIDAK dibuat di sini. Membuat user auth lewat SQL
+-- sangat bergantung pada versi internal Supabase Auth dan rentan rusak antar
+-- versi. Cara yang andal:
+--
+--   1. Jalankan aplikasi, lalu daftar lewat halaman /auth/register
+--      menggunakan email kampus (default domain: student.itk.ac.id).
+--   2. Jadikan satu akun sebagai admin dengan query berikut (ganti emailnya):
+--
+--        update public.profiles
+--          set role = 'admin', verification_status = 'verified'
+--          where email = 'admin@student.itk.ac.id';
+--
+--   3. (Opsional) verifikasi akun biasa secara manual untuk testing:
+--
+--        update public.profiles
+--          set verification_status = 'verified'
+--          where email = 'budi@student.itk.ac.id';
+--
+-- Tambahkan seed data non-auth (mis. kategori statis) di bawah baris ini bila
+-- diperlukan. Saat ini aplikasi tidak butuh seed tambahan untuk berjalan.
+-- =====================================================================

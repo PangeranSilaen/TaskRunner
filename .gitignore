@@ -21,6 +21,12 @@ dev-dist
 # Vercel
 .vercel
 
+# Supabase CLI (lacak migrations/, config.toml, seed.sql; abaikan runtime)
+supabase/.temp
+supabase/.branches
+supabase/logs
+supabase/.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
