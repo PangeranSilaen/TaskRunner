@@ -1,13 +1,17 @@
+import { Zap } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { TaskStatus } from "@/lib/constants";
 import { TASK_STATUS } from "@/lib/constants";
+import { Badge } from "@/components/ui/badge";
 
-const styles: Record<TaskStatus, string> = {
-  waiting_runner: "bg-warning/10 text-warning",
-  accepted: "bg-info/10 text-info",
-  in_progress: "bg-info/10 text-info",
-  completed: "bg-success/10 text-success",
-  cancelled: "bg-danger/10 text-danger",
+type Tone = "neutral" | "primary" | "success" | "warning" | "danger" | "info";
+
+const tones: Record<TaskStatus, Tone> = {
+  waiting_runner: "warning",
+  accepted: "info",
+  in_progress: "info",
+  completed: "success",
+  cancelled: "danger",
 };
 
 export function StatusBadge({
@@ -19,15 +23,9 @@ export function StatusBadge({
 }) {
   const key = status as TaskStatus;
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
-        styles[key] ?? "bg-surface-muted text-ink-soft",
-        className,
-      )}
-    >
+    <Badge tone={tones[key] ?? "neutral"} dot className={className}>
       {TASK_STATUS[key] ?? status}
-    </span>
+    </Badge>
   );
 }
 
@@ -35,10 +33,11 @@ export function UrgentBadge({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full bg-warning px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white",
+        "inline-flex items-center gap-0.5 rounded-full bg-gradient-to-r from-warning to-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm",
         className,
       )}
     >
+      <Zap className="size-2.5 fill-white" />
       Urgent
     </span>
   );
