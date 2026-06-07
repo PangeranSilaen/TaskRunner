@@ -33,37 +33,22 @@ export function Logo({ size = "md", withWordmark = true, className }: LogoProps)
   );
 }
 
-/** The standalone mark (no wordmark). Placeholder until the real asset lands. */
+/** The standalone Task Runner mark (no wordmark). */
 export function LogoMark({
   className,
   iconClass,
 }: {
   className?: string;
+  /** @deprecated kept for call-site compatibility; ignored. */
   iconClass?: string;
 }) {
+  void iconClass;
   return (
-    <div
-      className={cn(
-        "flex items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-white shadow-soft",
-        className,
-      )}
-    >
-      {/* Running figure glyph — swap for /logo.svg when ready */}
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={cn("size-5", iconClass)}
-        aria-hidden
-      >
-        <circle cx="13" cy="4" r="1.6" />
-        <path d="M4 17l3-3 3 1 2-4 3 2h3" />
-        <path d="M9 21l2-5 3-2" />
-        <path d="M14 12l-1-4-4 1-2 3" />
-      </svg>
-    </div>
+    <img
+      src="/logo.svg"
+      alt="Task Runner"
+      className={cn("object-contain", className)}
+      draggable={false}
+    />
   );
 }

@@ -33,7 +33,9 @@ export function HomePage() {
       <header className="safe-top rounded-b-[2rem] bg-gradient-to-br from-primary to-primary-dark px-5 pb-7 pt-5 text-white shadow-card">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <LogoMark className="size-9" iconClass="size-5" />
+            <span className="flex size-9 items-center justify-center rounded-xl bg-white p-1.5 shadow-soft">
+              <LogoMark className="size-full" />
+            </span>
             <span className="text-sm font-bold tracking-tight">
               Task<span className="text-accent">Runner</span>
             </span>

@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import { Logo } from "@/components/ui/logo";
 
 /** Soft teal background shell for the auth screens. */
 export function AuthLayout() {
@@ -13,8 +12,13 @@ export function AuthLayout() {
 
       <div className="relative flex flex-1 flex-col items-center justify-center px-5 py-10">
         <div className="mb-8 flex flex-col items-center text-center">
-          <Logo size="lg" withWordmark={false} className="mb-4 scale-125" />
-          <h1 className="text-2xl font-bold tracking-tight text-ink">
+          <img
+            src="/logo.svg"
+            alt="Task Runner"
+            className="mb-3 h-20 w-20 object-contain drop-shadow-sm"
+            draggable={false}
+          />
+          <h1 className="text-2xl font-extrabold uppercase tracking-[0.12em] text-ink">
             Task<span className="text-primary">Runner</span>
           </h1>
           <p className="mt-1.5 text-sm text-ink-soft">
