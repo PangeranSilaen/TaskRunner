@@ -151,11 +151,11 @@ export function TaskDetailPage() {
         {/* Title + desc */}
         <Card className="p-4">
           <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-ink">{task.title}</h2>
+            <h2 className="text-lg font-bold text-ink">{task.title}</h2>
+            <div className="flex shrink-0 flex-col items-end gap-1">
+              <StatusBadge status={task.status} />
               {task.task_type === "urgent" && <UrgentBadge />}
             </div>
-            <StatusBadge status={task.status} />
           </div>
           <p className="mt-1 flex items-center gap-1 text-xs font-medium text-ink-muted">
             <Hash className="size-3" />

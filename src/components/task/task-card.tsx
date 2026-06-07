@@ -41,15 +41,15 @@ export function TaskCard({
     <Card interactive={Boolean(to)} className="flex flex-col gap-3 p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-            <h3 className="truncate font-bold text-ink">{task.title}</h3>
-            {task.task_type === "urgent" && <UrgentBadge />}
-          </div>
+          <h3 className="truncate font-bold text-ink">{task.title}</h3>
           <p className="text-xs font-medium text-ink-muted">
             {categoryLabel(task.category)}
           </p>
         </div>
-        <StatusBadge status={task.status} className="mt-1" />
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <StatusBadge status={task.status} />
+          {task.task_type === "urgent" && <UrgentBadge />}
+        </div>
       </div>
 
       <p className="line-clamp-2 text-sm leading-relaxed text-ink-soft">
