@@ -52,4 +52,27 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split heavy vendors into cacheable, parallel-loading chunks.
+        // (Rolldown requires manualChunks as a function.)
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (/[\\/]react(-dom|-router-dom)?[\\/]/.test(id))
+            return "vendor-react";
+          if (id.includes("@supabase")) return "vendor-supabase";
+          if (id.includes("leaflet")) return "vendor-map";
+          if (id.includes("@tanstack")) return "vendor-data";
+          if (
+            id.includes("react-hook-form") ||
+            id.includes("@hookform") ||
+            id.includes("zod")
+          )
+            return "vendor-forms";
+          return "vendor";
+        },
+      },
+    },
+  },
 });

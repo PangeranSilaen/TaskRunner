@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
-import { ShieldCheck, X, Loader2 } from "lucide-react";
+import { ShieldCheck, ImageOff, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
+import { EmptyState, SkeletonCard } from "@/components/task/empty-state";
+import { useToast } from "@/components/ui/toast";
 import {
   useAdminPendingVerifications,
   useAdminReview,
@@ -15,24 +19,33 @@ export function AdminVerificationsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-10">
-        <Loader2 className="size-6 animate-spin text-primary" />
+      <div className="flex flex-col gap-3">
+        <SkeletonCard />
+        <SkeletonCard />
       </div>
     );
   }
 
   if (!pending || pending.length === 0) {
     return (
-      <div className="rounded-card border border-dashed border-line bg-surface p-8 text-center text-sm text-ink-muted">
-        Belum ada user menunggu verifikasi.
+      <div className="flex flex-col gap-4">
+        <h2 className="text-lg font-bold text-ink">Verifikasi</h2>
+        <EmptyState
+          icon={ShieldCheck}
+          title="Semua beres"
+          message="Tidak ada user yang menunggu verifikasi saat ini."
+        />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-sm font-semibold text-ink">
-        Menunggu Verifikasi ({pending.length})
+      <h2 className="text-lg font-bold text-ink">
+        Menunggu Verifikasi
+        <span className="ml-2 rounded-full bg-warning/15 px-2 py-0.5 text-sm text-amber-600">
+          {pending.length}
+        </span>
       </h2>
       {pending.map((req) => (
         <VerificationCard
@@ -56,6 +69,7 @@ function VerificationCard({
   onToggleReject: (open: boolean) => void;
 }) {
   const review = useAdminReview();
+  const toast = useToast();
   const [ktmUrl, setKtmUrl] = useState<string | null>(null);
   const [reason, setReason] = useState("");
 
@@ -74,38 +88,53 @@ function VerificationCard({
   const wa = req.phone_number ? toWhatsAppNumber(req.phone_number) : null;
 
   return (
-    <div className="flex flex-col gap-3 rounded-card bg-surface p-4 shadow-card">
-      <div>
-        <p className="font-semibold text-ink">
-          {req.profile?.full_name || "Tanpa Nama"}
-        </p>
-        <p className="text-sm text-ink-soft">{req.campus_email}</p>
-        <p className="text-sm text-ink-soft">
-          WhatsApp: {req.phone_number}
-          {wa && (
-            <a
-              href={`https://wa.me/${wa}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-2 text-primary underline"
-            >
-              buka
-            </a>
-          )}
-        </p>
+    <Card className="flex flex-col gap-3 p-4">
+      <div className="flex items-center gap-3">
+        <Avatar name={req.profile?.full_name} size="lg" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-bold text-ink">
+            {req.profile?.full_name || "Tanpa Nama"}
+          </p>
+          <p className="truncate text-sm text-ink-soft">{req.campus_email}</p>
+          <p className="flex items-center gap-1.5 text-sm text-ink-soft">
+            {req.phone_number}
+            {wa && (
+              <a
+                href={`https://wa.me/${wa}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 font-semibold text-primary"
+              >
+                WhatsApp <ExternalLink className="size-3" />
+              </a>
+            )}
+          </p>
+        </div>
       </div>
 
       {ktmUrl ? (
-        <a href={ktmUrl} target="_blank" rel="noopener noreferrer">
+        <a
+          href={ktmUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block overflow-hidden rounded-2xl border border-line"
+        >
           <img
             src={ktmUrl}
             alt="Foto KTM"
-            className="max-h-48 w-full rounded-lg border border-line object-contain"
+            className="max-h-52 w-full bg-surface-muted object-contain"
           />
         </a>
       ) : (
-        <div className="flex h-24 items-center justify-center rounded-lg bg-surface-muted text-xs text-ink-muted">
-          Memuat foto KTM...
+        <div className="flex h-28 flex-col items-center justify-center gap-2 rounded-2xl bg-surface-muted text-xs text-ink-muted">
+          {req.ktm_photo_url ? (
+            "Memuat foto KTM..."
+          ) : (
+            <>
+              <ImageOff className="size-6" />
+              Tidak ada foto KTM
+            </>
+          )}
         </div>
       )}
 
@@ -125,7 +154,7 @@ function VerificationCard({
               fullWidth
               onClick={() => onToggleReject(false)}
             >
-              <X className="size-4" /> Batal
+              Batal
             </Button>
             <Button
               variant="danger"
@@ -134,11 +163,17 @@ function VerificationCard({
               loading={review.isPending}
               disabled={reason.trim().length === 0}
               onClick={() =>
-                review.mutate({
-                  userId: req.user_id,
-                  approve: false,
-                  reason: reason.trim(),
-                })
+                review.mutate(
+                  {
+                    userId: req.user_id,
+                    approve: false,
+                    reason: reason.trim(),
+                  },
+                  {
+                    onSuccess: () => toast.success("Verifikasi ditolak."),
+                    onError: () => toast.error("Gagal memproses. Coba lagi."),
+                  },
+                )
               }
             >
               Tolak
@@ -159,12 +194,20 @@ function VerificationCard({
             size="sm"
             fullWidth
             loading={review.isPending}
-            onClick={() => review.mutate({ userId: req.user_id, approve: true })}
+            onClick={() =>
+              review.mutate(
+                { userId: req.user_id, approve: true },
+                {
+                  onSuccess: () => toast.success("User berhasil diverifikasi."),
+                  onError: () => toast.error("Gagal memproses. Coba lagi."),
+                },
+              )
+            }
           >
             <ShieldCheck className="size-4" /> Setujui
           </Button>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

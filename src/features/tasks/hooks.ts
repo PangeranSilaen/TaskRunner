@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase/client";
 import {
   createTask,
   listMyTasks,
@@ -45,6 +47,40 @@ export function useTask(taskId: string | undefined) {
     queryFn: () => getTask(taskId!),
     enabled: Boolean(taskId),
   });
+}
+
+/**
+ * Subscribe to realtime status changes for a single task. On any UPDATE the
+ * task detail + lists are invalidated so the tracking UI reflects accept ->
+ * start -> complete/cancel live. RLS still gates which rows are received.
+ */
+export function useTaskRealtime(taskId: string | undefined) {
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!taskId) return;
+    const channel = supabase
+      .channel(`task:${taskId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "tasks",
+          filter: `id=eq.${taskId}`,
+        },
+        () => {
+          void queryClient.invalidateQueries({
+            queryKey: ["tasks", "detail", taskId],
+          });
+          void queryClient.invalidateQueries({ queryKey: ["tasks", "mine"] });
+          void queryClient.invalidateQueries({ queryKey: ["tasks", "runner"] });
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [taskId, queryClient]);
 }
 
 export function useCreateTask() {

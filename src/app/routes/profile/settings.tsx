@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { PageHeader } from "@/components/layout/page-header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useAuthStore } from "@/stores/auth-store";
 import { supabase } from "@/lib/supabase/client";
 import { APP_NAME, APP_VERSION } from "@/lib/constants";
@@ -157,28 +158,12 @@ function ToggleRow({
 }) {
   const [on, setOn] = useState(defaultOn);
   return (
-    <div className="flex items-center justify-between rounded-card bg-surface p-4 shadow-soft">
-      <div>
+    <div className="flex items-center justify-between gap-3 rounded-card bg-surface p-4 shadow-soft">
+      <div className="min-w-0">
         <p className="text-sm font-medium text-ink">{label}</p>
         {hint && <p className="text-xs text-ink-muted">{hint}</p>}
       </div>
-      <button
-        role="switch"
-        aria-checked={on}
-        disabled={disabled}
-        onClick={() => setOn((v) => !v)}
-        className={cn(
-          "relative h-6 w-11 rounded-full transition-colors disabled:opacity-40",
-          on ? "bg-primary" : "bg-line",
-        )}
-      >
-        <span
-          className={cn(
-            "absolute top-0.5 size-5 rounded-full bg-white transition-transform",
-            on ? "translate-x-5" : "translate-x-0.5",
-          )}
-        />
-      </button>
+      <Switch checked={on} onChange={setOn} disabled={disabled} label={label} />
     </div>
   );
 }

@@ -1,14 +1,19 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/task/empty-state";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
+import { EmptyState, SkeletonCard } from "@/components/task/empty-state";
+import { useToast } from "@/components/ui/toast";
 import { useAdminReports, useAdminUpdateReport } from "@/features/admin/hooks";
-import { cn } from "@/lib/utils/cn";
 
-const statusStyle: Record<string, string> = {
-  open: "bg-warning/10 text-warning",
-  in_progress: "bg-info/10 text-info",
-  resolved: "bg-success/10 text-success",
+type Tone = "neutral" | "primary" | "success" | "warning" | "danger" | "info";
+
+const statusTone: Record<string, Tone> = {
+  open: "warning",
+  in_progress: "info",
+  resolved: "success",
 };
 
 const statusLabel: Record<string, string> = {
@@ -20,48 +25,58 @@ const statusLabel: Record<string, string> = {
 export function AdminReportsPage() {
   const { data: reports, isLoading } = useAdminReports();
   const update = useAdminUpdateReport();
+  const toast = useToast();
   const [notesId, setNotesId] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-8">
-        <Loader2 className="size-6 animate-spin text-primary" />
+      <div className="flex flex-col gap-3">
+        <SkeletonCard />
+        <SkeletonCard />
       </div>
     );
   }
 
   if (!reports || reports.length === 0) {
-    return <EmptyState message="Belum ada laporan masuk." />;
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="text-lg font-bold text-ink">Laporan Masalah</h2>
+        <EmptyState
+          icon={Flag}
+          title="Belum ada laporan"
+          message="Laporan masalah dari pengguna akan tampil di sini."
+        />
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-sm font-semibold text-ink">Laporan Masalah</h2>
+      <h2 className="text-lg font-bold text-ink">Laporan Masalah</h2>
       {reports.map((r) => (
-        <div key={r.id} className="flex flex-col gap-2 rounded-card bg-surface p-4 shadow-card">
+        <Card key={r.id} className="flex flex-col gap-3 p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="font-semibold text-ink">{r.reason}</p>
-              <p className="text-xs text-ink-muted">
-                Pelapor: {r.reporter?.full_name ?? "-"}
-              </p>
+              <p className="font-bold text-ink">{r.reason}</p>
+              <span className="mt-1 flex items-center gap-1.5 text-xs text-ink-muted">
+                <Avatar name={r.reporter?.full_name} size="sm" />
+                {r.reporter?.full_name ?? "Tanpa nama"}
+              </span>
             </div>
-            <span
-              className={cn(
-                "rounded-full px-2.5 py-1 text-xs font-medium",
-                statusStyle[r.status],
-              )}
-            >
+            <Badge tone={statusTone[r.status] ?? "neutral"} dot>
               {statusLabel[r.status] ?? r.status}
-            </span>
+            </Badge>
           </div>
+
           {r.description && (
-            <p className="text-sm text-ink-soft">{r.description}</p>
+            <p className="text-sm leading-relaxed text-ink-soft">
+              {r.description}
+            </p>
           )}
           {r.admin_notes && (
-            <p className="rounded-lg bg-surface-muted px-3 py-2 text-xs text-ink-soft">
-              <span className="font-medium">Catatan admin: </span>
+            <p className="rounded-xl bg-surface-muted px-3 py-2 text-xs text-ink-soft">
+              <span className="font-semibold">Catatan admin: </span>
               {r.admin_notes}
             </p>
           )}
@@ -96,7 +111,14 @@ export function AdminReportsPage() {
                           status: "resolved",
                           adminNotes: notes.trim() || undefined,
                         },
-                        { onSuccess: () => setNotesId(null) },
+                        {
+                          onSuccess: () => {
+                            toast.success("Laporan ditandai selesai.");
+                            setNotesId(null);
+                          },
+                          onError: () =>
+                            toast.error("Gagal memperbarui laporan."),
+                        },
                       )
                     }
                   >
@@ -111,8 +133,16 @@ export function AdminReportsPage() {
                     variant="outline"
                     size="sm"
                     fullWidth
+                    loading={update.isPending}
                     onClick={() =>
-                      update.mutate({ reportId: r.id, status: "in_progress" })
+                      update.mutate(
+                        { reportId: r.id, status: "in_progress" },
+                        {
+                          onSuccess: () => toast.success("Laporan diproses."),
+                          onError: () =>
+                            toast.error("Gagal memperbarui laporan."),
+                        },
+                      )
                     }
                   >
                     Proses
@@ -130,7 +160,7 @@ export function AdminReportsPage() {
                 </Button>
               </div>
             ))}
-        </div>
+        </Card>
       ))}
     </div>
   );

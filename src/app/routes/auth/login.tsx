@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/features/auth/schemas";
 import { signIn } from "@/features/auth/api";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 
 export function LoginPage() {
@@ -54,9 +55,8 @@ export function LoginPage() {
           error={errors.email?.message}
           {...register("email")}
         />
-        <Input
+        <PasswordInput
           label="Password"
-          type="password"
           placeholder="••••••••"
           autoComplete="current-password"
           error={errors.password?.message}

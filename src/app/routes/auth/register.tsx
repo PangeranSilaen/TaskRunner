@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@/features/auth/schemas";
 import { signUp } from "@/features/auth/api";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 
 export function RegisterPage() {
@@ -59,9 +60,8 @@ export function RegisterPage() {
           error={errors.email?.message}
           {...register("email")}
         />
-        <Input
+        <PasswordInput
           label="Password"
-          type="password"
           placeholder="Minimal 8 karakter"
           autoComplete="new-password"
           error={errors.password?.message}

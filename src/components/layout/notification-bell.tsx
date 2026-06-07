@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Bell, Check, CheckCheck } from "lucide-react";
+import { Bell, Check, CheckCheck, BellOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   useNotifications,
   useMarkRead,
   useMarkAllRead,
 } from "@/features/notifications/hooks";
+import { Sheet } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils/cn";
 
 function timeAgo(iso: string): string {
@@ -26,77 +27,80 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative">
+    <>
       <button
-        onClick={() => setOpen((v) => !v)}
-        aria-label="Notifikasi"
-        className="relative flex size-9 items-center justify-center rounded-lg hover:bg-white/10"
+        onClick={() => setOpen(true)}
+        aria-label={`Notifikasi${unreadCount > 0 ? `, ${unreadCount} belum dibaca` : ""}`}
+        className="relative flex size-10 items-center justify-center rounded-full transition-colors hover:bg-white/15 active:bg-white/15"
       >
         <Bell className="size-5" />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
+          <span className="absolute right-1 top-1 flex min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white ring-2 ring-primary">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
-      {open && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setOpen(false)}
-            aria-hidden
-          />
-          <div className="absolute right-0 top-11 z-50 max-h-[70vh] w-80 overflow-hidden rounded-card bg-surface text-ink shadow-xl">
-            <div className="flex items-center justify-between border-b border-line px-4 py-3">
-              <span className="font-semibold">Notifikasi</span>
-              {unreadCount > 0 && (
-                <button
-                  onClick={() => markAll.mutate()}
-                  className="flex items-center gap-1 text-xs text-primary"
-                >
-                  <CheckCheck className="size-3.5" /> Tandai semua dibaca
-                </button>
-              )}
-            </div>
-            <div className="max-h-[60vh] overflow-y-auto">
-              {notifications.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-ink-muted">
-                  Belum ada notifikasi.
-                </p>
-              ) : (
-                notifications.map((n) => (
-                  <button
-                    key={n.id}
-                    onClick={() => {
-                      if (!n.is_read) markRead.mutate(n.id);
-                      if (n.related_task_id) {
-                        setOpen(false);
-                        navigate(`/tasks/${n.related_task_id}`);
-                      }
-                    }}
-                    className={cn(
-                      "flex w-full items-start gap-2 border-b border-line px-4 py-3 text-left last:border-b-0 hover:bg-surface-muted",
-                      !n.is_read && "bg-primary-soft/30",
-                    )}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-ink">{n.title}</p>
-                      <p className="text-xs text-ink-soft">{n.body}</p>
-                      <p className="mt-0.5 text-[10px] text-ink-muted">
-                        {timeAgo(n.created_at)}
-                      </p>
-                    </div>
-                    {n.is_read && (
-                      <Check className="mt-1 size-3.5 shrink-0 text-ink-muted" />
-                    )}
-                  </button>
-                ))
-              )}
-            </div>
+      <Sheet open={open} onClose={() => setOpen(false)} hideClose title="Notifikasi">
+        {unreadCount > 0 && (
+          <div className="mb-2 flex justify-end">
+            <button
+              onClick={() => markAll.mutate()}
+              className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-semibold text-primary-dark"
+            >
+              <CheckCheck className="size-3.5" /> Tandai semua dibaca
+            </button>
           </div>
-        </>
-      )}
-    </div>
+        )}
+
+        {notifications.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 py-12 text-center">
+            <span className="flex size-14 items-center justify-center rounded-full bg-surface-muted text-ink-muted">
+              <BellOff className="size-7" />
+            </span>
+            <p className="text-sm font-medium text-ink">Belum ada notifikasi</p>
+            <p className="max-w-[15rem] text-xs text-ink-muted">
+              Kabar tentang task dan pesanmu akan muncul di sini.
+            </p>
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-1.5">
+            {notifications.map((n) => (
+              <li key={n.id}>
+                <button
+                  onClick={() => {
+                    if (!n.is_read) markRead.mutate(n.id);
+                    if (n.related_task_id) {
+                      setOpen(false);
+                      navigate(`/tasks/${n.related_task_id}`);
+                    }
+                  }}
+                  className={cn(
+                    "flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition-colors",
+                    n.is_read
+                      ? "hover:bg-surface-muted"
+                      : "bg-primary-soft/40 hover:bg-primary-soft/60",
+                  )}
+                >
+                  {!n.is_read && (
+                    <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary" />
+                  )}
+                  <div className={cn("min-w-0 flex-1", n.is_read && "pl-5")}>
+                    <p className="text-sm font-semibold text-ink">{n.title}</p>
+                    <p className="text-xs text-ink-soft">{n.body}</p>
+                    <p className="mt-1 text-[11px] text-ink-muted">
+                      {timeAgo(n.created_at)}
+                    </p>
+                  </div>
+                  {n.is_read && (
+                    <Check className="mt-1 size-3.5 shrink-0 text-ink-muted" />
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Sheet>
+    </>
   );
 }
