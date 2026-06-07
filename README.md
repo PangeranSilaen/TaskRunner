@@ -1,4 +1,24 @@
+<div align="center">
+
+<img src="public/logo.png" alt="Logo Task Runner" width="120" />
+
 # Task Runner
+
+**Bantuan cepat di sekitar kampus ITK — hubungkan yang butuh bantuan dengan yang siap membantu.**
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-taskrunner--swart.vercel.app-008C83?style=for-the-badge&logo=vercel&logoColor=white)](https://taskrunner-swart.vercel.app)
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Supabase](https://img.shields.io/badge/Supabase-Postgres-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com)
+[![PWA](https://img.shields.io/badge/PWA-ready-5A0FC8?logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+[![Leaflet](https://img.shields.io/badge/Leaflet-OpenStreetMap-199900?logo=leaflet&logoColor=white)](https://leafletjs.com)
+
+</div>
+
+---
 
 Aplikasi web progresif (PWA) mobile-first yang menghubungkan mahasiswa kampus
 ITK yang butuh bantuan menjalankan tugas kecil (customer) dengan mahasiswa lain
