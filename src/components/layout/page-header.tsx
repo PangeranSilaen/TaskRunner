@@ -19,7 +19,7 @@ export function PageHeader({
   const navigate = useNavigate();
   const Icon = closeIcon ? X : ArrowLeft;
   return (
-    <header className="safe-top sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface/95 px-3 py-3 backdrop-blur-lg">
+    <header className="safe-top sticky top-0 z-[1000] flex items-center gap-3 border-b border-line bg-surface/95 px-3 py-3 backdrop-blur-lg">
       <button
         onClick={() => (onBack ? onBack() : navigate(-1))}
         aria-label={closeIcon ? "Tutup" : "Kembali"}
