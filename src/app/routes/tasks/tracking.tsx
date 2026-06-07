@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Loader2, MessageCircle, Phone, MapPin } from "lucide-react";
+import { Loader2, MessageCircle, Phone, MapPin, Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
 import { StatusStepper } from "@/components/task/status-stepper";
 import { RatingModal } from "@/components/task/rating-modal";
 import { LocationPicker } from "@/components/map/location-picker";
+import { useToast } from "@/components/ui/toast";
 import {
   useTask,
+  useTaskRealtime,
   useStartTask,
   useCompleteTask,
 } from "@/features/tasks/hooks";
@@ -24,8 +28,11 @@ export function TrackingPage() {
   const { data: existingRating } = useTaskRating(id);
   const start = useStartTask();
   const complete = useCompleteTask();
-  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
   const [showRating, setShowRating] = useState(false);
+
+  // Live status updates (accept -> start -> complete/cancel).
+  useTaskRealtime(id);
 
   if (isLoading) {
     return (
@@ -57,31 +64,28 @@ export function TrackingPage() {
   const eta = TASK_TYPE[task.task_type as "regular" | "urgent"]?.etaLabel ?? "";
 
   const onStart = async () => {
-    setError(null);
     try {
       await start.mutateAsync(task.id);
+      toast.success("Task dimulai. Selamat bekerja!");
     } catch {
-      setError("Gagal memulai task. Coba lagi.");
+      toast.error("Gagal memulai task. Coba lagi.");
     }
   };
 
   const onComplete = async () => {
-    setError(null);
     try {
       await complete.mutateAsync(task.id);
       if (isCustomer) setShowRating(true);
     } catch {
-      setError("Gagal menandai selesai. Coba lagi.");
+      toast.error("Gagal menandai selesai. Coba lagi.");
     }
   };
 
   return (
     <div className="min-h-dvh w-full max-w-md bg-background pb-8">
-      <PageHeader title="Tracking Task" />
+      <PageHeader title="Tracking Task" subtitle={`#${task.public_code}`} />
 
       <div className="flex flex-col gap-4 p-5">
-        <span className="text-xs text-ink-muted">#{task.public_code}</span>
-
         {/* Map */}
         {task.latitude != null && task.longitude != null && (
           <div className="overflow-hidden rounded-card shadow-card">
@@ -94,42 +98,55 @@ export function TrackingPage() {
           </div>
         )}
 
-        {/* Info bubble */}
+        {/* Live status bubble */}
         {accepted && (
-          <div className="rounded-card bg-primary-soft/60 px-4 py-3 text-sm">
-            <p className="font-medium text-primary-dark">
-              {task.status === "accepted"
-                ? "Runner akan segera menuju lokasi"
-                : "Runner sedang mengerjakan task"}
-            </p>
-            {eta && <p className="text-xs text-ink-soft">Estimasi: {eta}</p>}
+          <div className="flex items-start gap-3 rounded-card bg-primary-soft/60 px-4 py-3">
+            <span className="relative mt-1 flex size-2.5">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-primary-dark">
+                {task.status === "accepted"
+                  ? "Runner akan segera menuju lokasi"
+                  : "Runner sedang mengerjakan task"}
+              </p>
+              {eta && <p className="text-xs text-ink-soft">Estimasi: {eta}</p>}
+            </div>
           </div>
         )}
 
         {/* Stepper */}
-        <div className="rounded-card bg-surface p-4 shadow-card">
-          <h3 className="mb-3 text-sm font-semibold text-ink">Status Task</h3>
+        <Card className="p-4">
+          <h3 className="mb-3 text-sm font-bold text-ink">Status Task</h3>
           <StatusStepper status={task.status} />
-        </div>
+        </Card>
 
         {/* Detail */}
-        <div className="rounded-card bg-surface p-4 shadow-card">
-          <h3 className="mb-2 text-sm font-semibold text-ink">Detail Task</h3>
-          <p className="font-medium text-ink">{task.title}</p>
-          <p className="mt-1 text-sm text-ink-soft">{task.description}</p>
-          <div className="mt-2 flex items-center gap-1.5 text-xs text-ink-muted">
+        <Card className="p-4">
+          <h3 className="mb-2 text-sm font-bold text-ink">Detail Task</h3>
+          <p className="font-semibold text-ink">{task.title}</p>
+          <p className="mt-1 text-sm leading-relaxed text-ink-soft">
+            {task.description}
+          </p>
+          <div className="mt-2.5 flex items-center gap-1.5 text-xs text-ink-muted">
             <MapPin className="size-3.5" /> {task.location_name}
           </div>
-        </div>
+        </Card>
 
         {/* Party info */}
         {otherParty && (
-          <div className="rounded-card bg-surface p-4 shadow-card">
-            <p className="mb-1 text-xs text-ink-muted">
-              {isCustomer ? "Runner" : "Customer"}
-            </p>
-            <p className="font-semibold text-ink">{otherParty.full_name}</p>
-          </div>
+          <Card className="flex items-center gap-3 p-4">
+            <Avatar name={otherParty.full_name} size="md" />
+            <div className="min-w-0">
+              <p className="text-xs text-ink-muted">
+                {isCustomer ? "Runner" : "Customer"}
+              </p>
+              <p className="truncate font-semibold text-ink">
+                {otherParty.full_name}
+              </p>
+            </div>
+          </Card>
         )}
 
         {/* Communication */}
@@ -141,7 +158,11 @@ export function TrackingPage() {
               </Button>
             </Link>
             {wa ? (
-              <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer">
+              <a
+                href={`https://wa.me/${wa}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button variant="outline" fullWidth>
                   <Phone className="size-4" /> WhatsApp
                 </Button>
@@ -154,15 +175,14 @@ export function TrackingPage() {
           </div>
         )}
 
-        {error && (
-          <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
-            {error}
-          </p>
-        )}
-
         {/* Runner: start task */}
         {isRunner && task.status === "accepted" && (
-          <Button fullWidth size="lg" loading={start.isPending} onClick={onStart}>
+          <Button
+            fullWidth
+            size="lg"
+            loading={start.isPending}
+            onClick={onStart}
+          >
             Mulai Kerjakan
           </Button>
         )}
@@ -172,7 +192,6 @@ export function TrackingPage() {
           <Button
             fullWidth
             size="lg"
-            className="bg-ink hover:bg-ink/90"
             loading={complete.isPending}
             onClick={onComplete}
           >
@@ -184,11 +203,15 @@ export function TrackingPage() {
           <>
             {isCustomer && !existingRating && (
               <Button fullWidth size="lg" onClick={() => setShowRating(true)}>
-                Beri Rating
+                <Star className="size-4" /> Beri Rating
               </Button>
             )}
-            <Button variant="secondary" fullWidth onClick={() => navigate("/tasks")}>
-              Kembali ke My Tasks
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => navigate("/tasks")}
+            >
+              Kembali ke Task Saya
             </Button>
           </>
         )}
