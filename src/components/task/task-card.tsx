@@ -41,7 +41,7 @@ export function TaskCard({
     <Card interactive={Boolean(to)} className="flex flex-col gap-3 p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <h3 className="truncate font-bold text-ink">{task.title}</h3>
             {task.task_type === "urgent" && <UrgentBadge />}
           </div>
@@ -49,7 +49,7 @@ export function TaskCard({
             {categoryLabel(task.category)}
           </p>
         </div>
-        <StatusBadge status={task.status} />
+        <StatusBadge status={task.status} className="mt-1" />
       </div>
 
       <p className="line-clamp-2 text-sm leading-relaxed text-ink-soft">
