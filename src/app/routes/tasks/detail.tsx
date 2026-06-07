@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { StatusStepper } from "@/components/task/status-stepper";
 import { StatusBadge, UrgentBadge } from "@/components/task/status-badge";
 import { FeeBreakdown } from "@/components/task/fee-breakdown";
+import { PaymentPanel } from "@/components/task/payment-panel";
 import { LocationPicker } from "@/components/map/location-picker";
 import { useTask, useCompleteTask, useCancelTask } from "@/features/tasks/hooks";
 import { useAuthStore } from "@/stores/auth-store";
@@ -137,6 +138,16 @@ export function TaskDetailPage() {
           runnerFee={task.runner_fee}
           variant={isRunner ? "runner" : "customer"}
         />
+
+        {/* Payment (after accepted) */}
+        {accepted && (
+          <PaymentPanel
+            taskId={task.id}
+            method={task.payment_method}
+            isCustomer={isCustomer}
+            isRunner={isRunner}
+          />
+        )}
 
         {/* Communication (after accepted) */}
         {accepted && (

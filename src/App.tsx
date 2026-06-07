@@ -21,6 +21,7 @@ import { MyTasksPage } from "@/app/routes/tasks";
 import { NewTaskPage } from "@/app/routes/tasks/new";
 import { TaskDetailPage } from "@/app/routes/tasks/detail";
 import { TrackingPage } from "@/app/routes/tasks/tracking";
+import { ChatPage } from "@/app/routes/tasks/chat";
 import { RunnerDashboardPage } from "@/app/routes/runner";
 import { RunnerTaskDetailPage } from "@/app/routes/runner/detail";
 
@@ -81,6 +82,14 @@ export function App() {
         element={
           <RequireAuth>
             <TrackingPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/tasks/:id/chat"
+        element={
+          <RequireAuth>
+            <ChatPage />
           </RequireAuth>
         }
       />

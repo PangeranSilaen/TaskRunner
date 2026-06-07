@@ -7,13 +7,55 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
+      payment_records: {
+        Row: {
+          created_at: string
+          id: string
+          method: string
+          notes: string | null
+          proof_url: string | null
+          runner_confirmed_at: string | null
+          status: string
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          method: string
+          notes?: string | null
+          proof_url?: string | null
+          runner_confirmed_at?: string | null
+          status?: string
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          method?: string
+          notes?: string | null
+          proof_url?: string | null
+          runner_confirmed_at?: string | null
+          status?: string
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_records_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: true
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -52,6 +94,45 @@ export type Database = {
           verification_status?: string
         }
         Relationships: []
+      }
+      task_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          sender_id: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_messages_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -233,6 +314,7 @@ export type Database = {
       complete_task: { Args: { p_task_id: string }; Returns: undefined }
       has_active_runner_task: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
+      is_task_participant: { Args: { p_task_id: string }; Returns: boolean }
       is_verified: { Args: never; Returns: boolean }
       start_task: { Args: { p_task_id: string }; Returns: undefined }
       submit_verification: {
